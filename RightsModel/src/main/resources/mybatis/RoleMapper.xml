@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bsoft.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.bsoft.bean.Role">
+    <id column="ROLE_ID" jdbcType="DECIMAL" property="roleId" />
+    <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ROLE_ID, ROLE_NAME, DESCRIPTION, STATUS
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_ROLE
+    where ROLE_ID = #{roleId,jdbcType=DECIMAL}
+  </select>
+  <select id="getRoleList" parameterType="string" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_ROLE
+    <where>
+    	<if test="rolename != null and rolename !=''"> ROLE_NAME like '%'||#{rolename}||'%' </if>
+    	and status = 1
+    </where>
+  </select>
+  <select id="getRolesByUserId" parameterType="long" resultType="map">
+    select r1.ROLE_ID roleId,r1.ROLE_NAME roleName from T_ROLE r1 left join T_USER_ROLE r2 on r1.ROLE_ID = r2.ROLE_ID
+    <where>
+    	<if test="userId != null and userId !=''"> r2.USER_ID = #{userId} </if>
+    	and r1.status = 1 and r2.status = 1
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from T_ROLE
+    where ROLE_ID = #{roleId,jdbcType=DECIMAL}
+  </delete>
+  <delete id="deleteRolesByUserId" parameterType="java.lang.Long">
+    delete from T_USER_ROLE 
+    where USER_ID = #{userId}
+  </delete>
+  <insert id="addUserRoles" parameterType="map">
+    INSERT ALL
+    <foreach collection ="roleIdList" item="rid" >
+    into T_USER_ROLE(USER_ID,ROLE_ID,STATUS)
+    values 
+         (#{userId}, #{rid}, 1)
+    </foreach >
+    SELECT 1 FROM DUAL
+  </insert>
+  <insert id="insert" parameterType="com.bsoft.bean.Role">
+    insert into T_ROLE (ROLE_ID, ROLE_NAME, DESCRIPTION, 
+      STATUS)
+    values (#{roleId,jdbcType=DECIMAL}, #{roleName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{status,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bsoft.bean.Role">
+    insert into T_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        ROLE_ID,
+      </if>
+      <if test="roleName != null">
+        ROLE_NAME,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        #{roleId,jdbcType=DECIMAL},
+      </if>
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bsoft.bean.Role">
+    update T_ROLE
+    <set>
+      <if test="roleName != null">
+        ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ROLE_ID = #{roleId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bsoft.bean.Role">
+    update T_ROLE
+    set ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=DECIMAL}
+    where ROLE_ID = #{roleId,jdbcType=DECIMAL}
+  </update>
+</mapper>

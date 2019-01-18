@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bsoft.mapper.ResourceMapper">
+  <resultMap id="BaseResultMap" type="com.bsoft.bean.Resource">
+    <id column="RESOURCE_ID" jdbcType="DECIMAL" property="resourceId" />
+    <result column="RESOURCE_TYPE" jdbcType="DECIMAL" property="resourceType" />
+    <result column="RESOURCE_PATH" jdbcType="VARCHAR" property="resourcePath" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="RESOURCE_NAME" jdbcType="VARCHAR" property="resourceName" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    RESOURCE_ID, RESOURCE_TYPE, RESOURCE_PATH, STATUS, RESOURCE_NAME, DESCRIPTION
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_RESOURCE
+    where RESOURCE_ID = #{resourceId,jdbcType=DECIMAL}
+  </select>
+  <select id="getResourceList" parameterType="string" resultType="map">
+    select 
+    RESOURCE_ID as resourceId, RESOURCE_TYPE as resourceType, RESOURCE_PATH as resourcePath, STATUS as status, RESOURCE_NAME as resourceName, DESCRIPTION as description,
+    case when RESOURCE_TYPE = 1 then '菜单'
+    when RESOURCE_TYPE = 2 then '按钮'
+    end as typeName
+    from T_RESOURCE
+    <where>
+    	<if test="resourceName != null and resourceName != ''">RESOURCE_NAME like '%'||#{resourceName}||'%' </if>
+    	and status = 1
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from T_RESOURCE
+    where RESOURCE_ID = #{resourceId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.bsoft.bean.Resource">
+    insert into T_RESOURCE (RESOURCE_ID, RESOURCE_TYPE, RESOURCE_PATH, 
+      STATUS, RESOURCE_NAME, DESCRIPTION
+      )
+    values (#{resourceId,jdbcType=DECIMAL}, #{resourceType,jdbcType=DECIMAL}, #{resourcePath,jdbcType=VARCHAR}, 
+      #{status,jdbcType=DECIMAL}, #{resourceName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.bsoft.bean.Resource">
+    insert into T_RESOURCE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="resourceId != null">
+        RESOURCE_ID,
+      </if>
+      <if test="resourceType != null">
+        RESOURCE_TYPE,
+      </if>
+      <if test="resourcePath != null">
+        RESOURCE_PATH,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+      <if test="resourceName != null">
+        RESOURCE_NAME,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="resourceId != null">
+        #{resourceId,jdbcType=DECIMAL},
+      </if>
+      <if test="resourceType != null">
+        #{resourceType,jdbcType=DECIMAL},
+      </if>
+      <if test="resourcePath != null">
+        #{resourcePath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="resourceName != null">
+        #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bsoft.bean.Resource">
+    update T_RESOURCE
+    <set>
+      <if test="resourceType != null">
+        RESOURCE_TYPE = #{resourceType,jdbcType=DECIMAL},
+      </if>
+      <if test="resourcePath != null">
+        RESOURCE_PATH = #{resourcePath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="resourceName != null">
+        RESOURCE_NAME = #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where RESOURCE_ID = #{resourceId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bsoft.bean.Resource">
+    update T_RESOURCE
+    set RESOURCE_TYPE = #{resourceType,jdbcType=DECIMAL},
+      RESOURCE_PATH = #{resourcePath,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=DECIMAL},
+      RESOURCE_NAME = #{resourceName,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR}
+    where RESOURCE_ID = #{resourceId,jdbcType=DECIMAL}
+  </update>
+</mapper>
